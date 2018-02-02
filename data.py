@@ -33,11 +33,20 @@ for m in movies:
         'deaths': 0,
     })
 
-print(totals)
+# print(totals)
 
+# ugh this is disgusting:
 for index, row in df.iterrows():
     m = row['movie']
     t = row['type']
+    for tot in totals:
+        if tot['title'] == m:
+            if t == 'word':
+                tot['swears'] += 1
+            else:
+                tot['deaths'] += 1
+
+print totals
 
 
 
