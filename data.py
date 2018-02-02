@@ -3,22 +3,16 @@ import pandas as pd
 from pandas_datareader import data as web
 import matplotlib.pyplot as plt
 from matplotlib import style
-curses = 0
-deaths = 0
+import numpy as np
+# curses = 0
+# deaths = 0
 movies = []
-totals = [];
+totals = []
 
+curses = []
+dead = []
 
 df = pd.read_csv('tarantino.csv')
-
-# print(df['type'].head())
-# for m in df['movie']:
-#     if m not in movies:
-#         movies.append(m)
-
-# print(movies)
-
-
 
 # We do need index:
 for index, row in df.iterrows():
@@ -35,7 +29,7 @@ for m in movies:
 
 # print(totals)
 
-# ugh this is disgusting:
+# ugh this is disgusting... but it works at least:
 for index, row in df.iterrows():
     m = row['movie']
     t = row['type']
@@ -46,8 +40,36 @@ for index, row in df.iterrows():
             else:
                 tot['deaths'] += 1
 
-print totals
+print(totals)
 
+# why not just do another loop....:
+for t in totals:
+    curses.append(t['swears'])
+    dead.append(t['deaths'])
+
+
+
+# prepare for double-bar chart:
+num_groups = len(totals);
+
+# still don't understand this double assignment syntax:
+fig, ax = plt.subplots()
+index = np.arange(num_groups)
+bar_width = 0.30
+# opacity: 0.66
+
+rects1 = plt.bar(index, curses, bar_width, color='b', label='curses')
+
+rects2 = plt.bar(index + bar_width, dead, bar_width, color='r', label='dead')
+
+plt.xlabel('Movie')
+plt.ylabel('Stats')
+plt.title("Tarantino: you filthy man")
+plt.xticks(index + bar_width, movies)
+plt.legend()
+
+plt.tight_layout()
+plt.show()
 
 
 # print(movies)
