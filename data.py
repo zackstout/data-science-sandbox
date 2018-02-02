@@ -14,6 +14,8 @@ dead = []
 
 df = pd.read_csv('tarantino.csv')
 
+style.use('ggplot')
+
 # We do need index:
 for index, row in df.iterrows():
     # print(df['movie'])
