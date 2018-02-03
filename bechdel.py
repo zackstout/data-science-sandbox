@@ -16,26 +16,55 @@ passingTitles = []
 passingYears = []
 failingTitles = []
 failingYears = []
+s = 0
+passesYear = []
+failsYear = []
+passesAnn = []
+failsAnn = []
 
 df = pd.read_csv('movies.csv')
 
-print(df.head(8))
+# print(df.head(8))
 
 for index, row in df.iterrows():
     # print(df['movie'])
     budgets.append(int(row['budget']/1000000))
+    grosses.append((row['intgross']/1000000))
+
     if row['binary'] == 'PASS':
         passes.append(1)
         passingTitles.append(row['title'])
         passingYears.append(row['year'])
+        # print(df.iterrows()[index - 1])
     else:
         passes.append(0)
         failingTitles.append(row['title'])
         failingYears.append(row['year'])
-    grosses.append((row['intgross']/1000000))
 
-print(budgets[:6])
-print(grosses[:4])
+for i in range(0, len(df)):
+    # print(df.iloc[i]['binary'])
+    if df.iloc[i]['year'] == df.iloc[i - 1]['year']:
+        s += 1
+    else:
+        if df.iloc[i]['binary'] == 'PASS':
+            passesYear.append(s)
+            s = 0
+            passesAnn.append(df.iloc[i - 1]['year'])
+        else:
+            failsYear.append(s)
+            s = 0
+            failsAnn.append(df.iloc[i - 1]['year'])
+
+# print('passes: ', passesYear)
+# print('fails: ', failsYear)
+# print('passYears: ', passesAnn)
+# print('failYears: ', failsAnn)
+
+plt.plot(passesAnn, passesYear, 'ro', failsAnn, failsYear, 'bo')
+plt.show()
+
+# print(budgets[:6])
+# print(grosses[:4])
 #
 
 # plt.plot(budgets, grosses, 'ro')
@@ -44,8 +73,8 @@ print(grosses[:4])
 # print(passingTitles)
 
 # oooh 'ro' means red circles;
-plt.plot(passingYears, passingTitles, 'ro', failingYears, failingTitles, 'bo')
-plt.show()
+# plt.plot(passingYears, passingTitles, 'ro', failingYears, failingTitles, 'bo')
+# plt.show()
 
 
 # how do we, for each year, sum up how many fails and passes it has, and draw two curves to represent that?
