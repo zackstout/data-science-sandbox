@@ -61,6 +61,11 @@ for i in range(0, len(df)):
 # print('failYears: ', failsAnn)
 
 plt.plot(passesAnn, passesYear, 'ro', failsAnn, failsYear, 'bo')
+# plt.legend()
+plt.xlabel('Year')
+plt.ylabel('Number of Movies')
+
+# plt.tight_layout()
 plt.show()
 
 # print(budgets[:6])

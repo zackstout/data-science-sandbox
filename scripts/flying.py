@@ -7,4 +7,5 @@ import numpy as np
 
 df = pd.read_csv('csvs/flying-etiquette.csv')
 
-print(df.head())
+print(df.head(15))
+print(len(df))

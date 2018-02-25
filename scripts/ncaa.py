@@ -9,3 +9,4 @@ df = pd.read_csv('csvs/ncaa-predictions.csv')
 
 # Ok this is working: I guess you don't need the .. before /csvs, because python is being executed from the root folder.
 print(df.head())
+print(len(df))
