@@ -11,6 +11,17 @@ Other possibilities from FiveThirtyEight: Twitter, Bechdel test, weather history
 - matplotlib
 - numpy
 
+## Results of Bechdel vs. Ratings:
+
+Critic | Bechdel Score | Rating
+--- | --- | --- 
+IMDB | Pass | 6.62 
+IMDB | Fail | 6.86 
+Rotten Tomatoes | Pass | 60.4 
+Rotten Tomatoes | Fail | 62.5 
+Metacritic | Pass | 58.8 
+Metacritic | Fail | 69.5 
+
 ## Screenshots:
 Number of movies passing (red) or failing (blue) the Bechdel test by year:
 ![screen shot 2018-02-24 at 8 22 54 pm](https://user-images.githubusercontent.com/29472568/36637393-9afa04ea-19a0-11e8-9317-db6e49c523c4.png)

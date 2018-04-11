@@ -103,6 +103,7 @@ def cleanData():
 
 # Get ratings for each movie:
 def getRatings(binary):
+    # Check whether you care about passing or failing movies:
     if binary:
         arr = passingIds 
         r1 = imdb_passes
@@ -113,27 +114,12 @@ def getRatings(binary):
         r1 = imdb_fails 
         r2 = rt_fails
         r3 = mc_fails
+
+    # Loop through all movies and grab each movie's critical ratings:
     for mov in arr:
         link = "http://www.omdbapi.com/?apikey=trilogy&i=%s" % mov
-        # info = urllib.request.urlopen(link)
-        # print(info)
         data = json.load(urllib.request.urlopen(link))
-        # print(data)
-
-        # Why isn't this working?
-        # if (data["Response"] == False):
-        #     continue
-
-        # First attempt:
-        ratings = []
-        # for r in data["Ratings"]:
-        #     rating = dict()
-        #     # Can't use dot notation to set values:
-        #     rating["source"] = r["Source"]
-        #     rating["value"] = r["Value"]
-        #     ratings.append(rating)
         
-        # Alternative approach:
         if ("Ratings" in data): # Finally -- thanks again SO; this is how we avoid the key error
             for r in data["Ratings"]:
                 # print(r["Source"])
@@ -141,31 +127,40 @@ def getRatings(binary):
                 # Imdb:
                 if r["Source"] == "Internet Movie Database":
                     value = float(val[:3])
-                    print("IMDB: ", value)
+                    # print("IMDB: ", value)
                     r1.append(value);
 
                 # Oooh i was wrong, the odd man out isn't always MC - sometimes there's no RT, but *is* MC:
                 # Rotten Tomatoes:
                 elif r["Source"] == "Rotten Tomatoes":
                     value = float(val[:val.find("%")])
-                    # print("RT", value)
                     r2.append(value);
 
                 # MC:
                 else:
                     value = float(val[:val.find("/")])
-                    # print("MC", value)
                     r3.append(value)
             
             # print(ratings)
 
+# Initialize pass/fail list:
 checkPasses()
+# Get ratings for passers and failers of the Bechdel test:
 getRatings(True)
-# getNegRatings()
-# getRatings(False)
+getRatings(False)
 
-print(imdb_passes)
-print(imdb_fails)
+# print(imdb_passes)
+# print(imdb_fails)
+
+# Calculate averages:
+imdb_pass_avg = sum(imdb_passes) / float(len(imdb_passes))
+imdb_fail_avg = sum(imdb_fails) / float(len(imdb_fails))
+rt_pass_avg = sum(rt_passes) / float(len(rt_passes))
+rt_fail_avg = sum(rt_fails) / float(len(rt_fails))
+mc_pass_avg = sum(mc_passes) / float(len(mc_passes))
+mc_fail_avg = sum(mc_fails) / float(len(mc_fails))
+
+print("IMDB pass: ", imdb_pass_avg, "IMDB fail: ", imdb_fail_avg, "RT pass: ", rt_pass_avg, "RT fail: ", rt_fail_avg, "MC pass: ", mc_pass_avg, "MC fail: ", mc_fail_avg)
 
 
 # plt.plot(passesAnn, passesYear, 'ro', failsAnn, failsYear, 'bo')
