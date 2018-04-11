@@ -103,17 +103,16 @@ def cleanData():
 
 # Get ratings for each movie:
 def getRatings(binary):
-    if (binary):
-        arr = passingIds
-        r1 = imdb_passes 
-        r2 = rt_passes 
+    if binary:
+        arr = passingIds 
+        r1 = imdb_passes
+        r2 = rt_passes
         r3 = mc_passes
-    else:
+    else: 
         arr = failingIds 
         r1 = imdb_fails 
         r2 = rt_fails
         r3 = mc_fails
-
     for mov in arr:
         link = "http://www.omdbapi.com/?apikey=trilogy&i=%s" % mov
         # info = urllib.request.urlopen(link)
@@ -122,8 +121,8 @@ def getRatings(binary):
         # print(data)
 
         # Why isn't this working?
-        if (data["Response"] == False):
-            continue
+        # if (data["Response"] == False):
+        #     continue
 
         # First attempt:
         ratings = []
@@ -135,34 +134,38 @@ def getRatings(binary):
         #     ratings.append(rating)
         
         # Alternative approach:
-        if (data):
-            for i, r in enumerate(data["Ratings"]):
+        if ("Ratings" in data): # Finally -- thanks again SO; this is how we avoid the key error
+            for r in data["Ratings"]:
+                # print(r["Source"])
                 val = r["Value"]
                 # Imdb:
-                if i == 0:
+                if r["Source"] == "Internet Movie Database":
                     value = float(val[:3])
-                    # print("IMDB: ", value)
-                    imdb_passes.append(value);
+                    print("IMDB: ", value)
+                    r1.append(value);
 
+                # Oooh i was wrong, the odd man out isn't always MC - sometimes there's no RT, but *is* MC:
                 # Rotten Tomatoes:
-                elif i == 1:
+                elif r["Source"] == "Rotten Tomatoes":
                     value = float(val[:val.find("%")])
                     # print("RT", value)
-                    rt_passes.append(value);
+                    r2.append(value);
 
                 # MC:
                 else:
                     value = float(val[:val.find("/")])
                     # print("MC", value)
-                    mc_passes.append(value)
+                    r3.append(value)
             
             # print(ratings)
 
 checkPasses()
 getRatings(True)
-getRatings(False)
+# getNegRatings()
+# getRatings(False)
 
-print('hi')
+print(imdb_passes)
+print(imdb_fails)
 
 
 # plt.plot(passesAnn, passesYear, 'ro', failsAnn, failsYear, 'bo')
