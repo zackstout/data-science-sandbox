@@ -7,6 +7,13 @@ import numpy as np
 # it's smart enough to autofill tflearn ONLY IF i've already referenced it in the code!
 import tflearn
 
+import urllib.request, urllib.error
+
+import json
+
+
+
+
 style.use('ggplot')
 
 budgets = []
@@ -22,6 +29,11 @@ failsYear = []
 passesAnn = []
 failsAnn = []
 
+passingIds = []
+failingIds = []
+
+movie_ratings = []
+
 df = pd.read_csv('movies.csv')
 
 # print(df.head(8))
@@ -32,11 +44,13 @@ for index, row in df.iterrows():
     grosses.append((row['intgross']/1000000))
 
     if row['binary'] == 'PASS':
+        passingIds.append(row['imdb'])
         passes.append(1)
         passingTitles.append(row['title'])
         passingYears.append(row['year'])
         # print(df.iterrows()[index - 1])
     else:
+        failingIds.append(row['imdb'])
         passes.append(0)
         failingTitles.append(row['title'])
         failingYears.append(row['year'])
@@ -55,18 +69,40 @@ for i in range(0, len(df)):
             s = 0
             failsAnn.append(df.iloc[i - 1]['year'])
 
+
+# print('passing: ', passingIds)
+# print('failing: ', failingTitles)
 # print('passes: ', passesYear)
 # print('fails: ', failsYear)
 # print('passYears: ', passesAnn)
 # print('failYears: ', failsAnn)
 
-plt.plot(passesAnn, passesYear, 'ro', failsAnn, failsYear, 'bo')
-# plt.legend()
-plt.xlabel('Year')
-plt.ylabel('Number of Movies')
+for mov in passingIds:
+    link = "http://www.omdbapi.com/?apikey=trilogy&i=%s" % mov
+    # info = urllib.request.urlopen(link)
+    # print(info)
+    data = json.load(urllib.request.urlopen(link))
+    # print(data)
 
-# plt.tight_layout()
-plt.show()
+    ratings = []
+
+    for r in data["Ratings"]:
+        rating = dict()
+        rating["source"] = r["Source"]
+        rating["value"] = r["Value"]
+        ratings.append(rating)
+    
+    print(ratings)
+
+
+
+
+
+# plt.plot(passesAnn, passesYear, 'ro', failsAnn, failsYear, 'bo')
+# plt.xlabel('Year')
+# plt.ylabel('Number of Movies')
+
+# plt.show()
 
 # print(budgets[:6])
 # print(grosses[:4])
@@ -99,5 +135,5 @@ plt.show()
 # print("Y = " + str(m.get_weights(linear.W)) +
 #       "*X + " + str(m.get_weights(linear.b)))
 
-print("\nTest prediction for x = 3.2, 3.3, 3.4:")
+# print("\nTest prediction for x = 3.2, 3.3, 3.4:")
 # print(m.predict([3.2, 3.3, 3.4]))
