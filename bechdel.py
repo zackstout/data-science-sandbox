@@ -10,8 +10,7 @@ import tflearn
 import urllib.request, urllib.error
 
 import json
-
-
+from pandas.plotting import scatter_matrix
 
 
 style.use('ggplot')
@@ -36,38 +35,55 @@ movie_ratings = []
 
 df = pd.read_csv('movies.csv')
 
+# --VISUALIZATIONS--:
+# box/whisker -- Wow this is amazing:
+# df.plot(kind='box', subplots=True, layout=(3, 3), sharex=False, sharey=False)
+# plt.show()
+
+# histograms -- Wow this is also nuts:
+# df.hist()
+# plt.show()
+
+# scatter plot matrix -- WOW --:
+# scatter_matrix(df)
+# plt.show()
+
+
+
 # print(df.head(8))
 
-for index, row in df.iterrows():
-    # print(df['movie'])
-    budgets.append(int(row['budget']/1000000))
-    grosses.append((row['intgross']/1000000))
+def checkPasses():
+    for index, row in df.iterrows():
+        # print(df['movie'])
+        budgets.append(int(row['budget']/1000000))
+        grosses.append((row['intgross']/1000000))
 
-    if row['binary'] == 'PASS':
-        passingIds.append(row['imdb'])
-        passes.append(1)
-        passingTitles.append(row['title'])
-        passingYears.append(row['year'])
-        # print(df.iterrows()[index - 1])
-    else:
-        failingIds.append(row['imdb'])
-        passes.append(0)
-        failingTitles.append(row['title'])
-        failingYears.append(row['year'])
-
-for i in range(0, len(df)):
-    # print(df.iloc[i]['binary'])
-    if df.iloc[i]['year'] == df.iloc[i - 1]['year']:
-        s += 1
-    else:
-        if df.iloc[i]['binary'] == 'PASS':
-            passesYear.append(s)
-            s = 0
-            passesAnn.append(df.iloc[i - 1]['year'])
+        if row['binary'] == 'PASS':
+            passingIds.append(row['imdb'])
+            passes.append(1)
+            passingTitles.append(row['title'])
+            passingYears.append(row['year'])
+            # print(df.iterrows()[index - 1])
         else:
-            failsYear.append(s)
-            s = 0
-            failsAnn.append(df.iloc[i - 1]['year'])
+            failingIds.append(row['imdb'])
+            passes.append(0)
+            failingTitles.append(row['title'])
+            failingYears.append(row['year'])
+
+def cleanData():
+    for i in range(0, len(df)):
+        # print(df.iloc[i]['binary'])
+        if df.iloc[i]['year'] == df.iloc[i - 1]['year']:
+            s += 1
+        else:
+            if df.iloc[i]['binary'] == 'PASS':
+                passesYear.append(s)
+                s = 0
+                passesAnn.append(df.iloc[i - 1]['year'])
+            else:
+                failsYear.append(s)
+                s = 0
+                failsAnn.append(df.iloc[i - 1]['year'])
 
 
 # print('passing: ', passingIds)
@@ -77,23 +93,26 @@ for i in range(0, len(df)):
 # print('passYears: ', passesAnn)
 # print('failYears: ', failsAnn)
 
-for mov in passingIds:
-    link = "http://www.omdbapi.com/?apikey=trilogy&i=%s" % mov
-    # info = urllib.request.urlopen(link)
-    # print(info)
-    data = json.load(urllib.request.urlopen(link))
-    # print(data)
 
-    ratings = []
+# Get ratings for each movie:
+def getRatings():
+    for mov in passingIds:
+        link = "http://www.omdbapi.com/?apikey=trilogy&i=%s" % mov
+        # info = urllib.request.urlopen(link)
+        # print(info)
+        data = json.load(urllib.request.urlopen(link))
+        # print(data)
 
-    for r in data["Ratings"]:
-        rating = dict()
-        rating["source"] = r["Source"]
-        rating["value"] = r["Value"]
-        ratings.append(rating)
-    
-    print(ratings)
+        ratings = []
 
+        for r in data["Ratings"]:
+            rating = dict()
+            # Can't use dot notation to set values:
+            rating["source"] = r["Source"]
+            rating["value"] = r["Value"]
+            ratings.append(rating)
+        
+        # print(ratings)
 
 
 
