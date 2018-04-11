@@ -28,10 +28,17 @@ failsYear = []
 passesAnn = []
 failsAnn = []
 
+# Dealing with ratings:
+movie_ratings = []
 passingIds = []
 failingIds = []
+imdb_passes = []
+imdb_fails = []
+rt_passes = []
+rt_fails = []
+mc_passes = []
+mc_fails = []
 
-movie_ratings = []
 
 df = pd.read_csv('movies.csv')
 
@@ -95,26 +102,67 @@ def cleanData():
 
 
 # Get ratings for each movie:
-def getRatings():
-    for mov in passingIds:
+def getRatings(binary):
+    if (binary):
+        arr = passingIds
+        r1 = imdb_passes 
+        r2 = rt_passes 
+        r3 = mc_passes
+    else:
+        arr = failingIds 
+        r1 = imdb_fails 
+        r2 = rt_fails
+        r3 = mc_fails
+
+    for mov in arr:
         link = "http://www.omdbapi.com/?apikey=trilogy&i=%s" % mov
         # info = urllib.request.urlopen(link)
         # print(info)
         data = json.load(urllib.request.urlopen(link))
         # print(data)
 
+        # Why isn't this working?
+        if (data["Response"] == False):
+            continue
+
+        # First attempt:
         ratings = []
-
-        for r in data["Ratings"]:
-            rating = dict()
-            # Can't use dot notation to set values:
-            rating["source"] = r["Source"]
-            rating["value"] = r["Value"]
-            ratings.append(rating)
+        # for r in data["Ratings"]:
+        #     rating = dict()
+        #     # Can't use dot notation to set values:
+        #     rating["source"] = r["Source"]
+        #     rating["value"] = r["Value"]
+        #     ratings.append(rating)
         
-        # print(ratings)
+        # Alternative approach:
+        if (data):
+            for i, r in enumerate(data["Ratings"]):
+                val = r["Value"]
+                # Imdb:
+                if i == 0:
+                    value = float(val[:3])
+                    # print("IMDB: ", value)
+                    imdb_passes.append(value);
 
+                # Rotten Tomatoes:
+                elif i == 1:
+                    value = float(val[:val.find("%")])
+                    # print("RT", value)
+                    rt_passes.append(value);
 
+                # MC:
+                else:
+                    value = float(val[:val.find("/")])
+                    # print("MC", value)
+                    mc_passes.append(value)
+            
+            # print(ratings)
+
+checkPasses()
+getRatings(True)
+getRatings(False)
+
+print('hi')
 
 
 # plt.plot(passesAnn, passesYear, 'ro', failsAnn, failsYear, 'bo')
